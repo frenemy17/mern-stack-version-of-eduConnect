@@ -26,16 +26,16 @@ const userSchema = new mongoose.Schema({
     },
     yearOfStudy: {
         type: String,
-        required: false,
+        default: "",
     },
     branch: {
         type: String,   
-        required: false, // Optional field
+        default: "", // Optional field
 
     },
     college: {
         type: String,
-        required: false, // Optional field
+        default: "", // Optional field
     },
     isOnboarded: {
         type: Boolean,
