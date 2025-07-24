@@ -1,74 +1,73 @@
 import mongoose from "mongoose";
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema({
-    fullname: {
-        type: String,
-        required: true,
+const userSchema = new mongoose.Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true,
-        minlength: 6,
+      type: String,
+      required: true,
+      minlength: 6,
     },
     bio: {
-        type: String,
-        default: "",
+      type: String,
+      default: "",
     },
-    profilePicture: {
-        type: String, 
-        default: "", // Placeholder URL for profile picture  
-    },
-    yearOfStudy: {
-        type: String,
-        default: "",
-    },
-    branch: {
-        type: String,   
-        default: "", // Optional field
-
+    profilePic: {
+      type: String,
+      default: "",
     },
     college: {
-        type: String,
-        default: "", // Optional field
+      type: String,
+      default: "",
+    },
+    branch: {
+      type: String,
+      default: "",
+    },
+    location: {
+      type: String,
+      default: "",
     },
     isOnboarded: {
-        type: Boolean,
-        default: false, // Indicates if the user has completed onboarding
+      type: Boolean,
+      default: false,
     },
-    friends: [{
+    friends: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to User model for friends
-    }],
+        ref: "User",
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-}, {timestamps: true});
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next(); 
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-
-    }
-    catch (error) {
-        next(error);
-    }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
-    const isPasswordCorrect= await bcrypt.compare(enteredPassword, this.password);
-    return isPasswordCorrect;
-}
-
+  const isPasswordCorrect = await bcrypt.compare(enteredPassword, this.password);
+  return isPasswordCorrect;
+};
 
 const User = mongoose.model("User", userSchema);
-
-
 
 export default User;
